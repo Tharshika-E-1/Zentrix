@@ -11,8 +11,12 @@ export const createChat = async (req, res) => {
       name: "New Chat",
       userName: req.user.name,
     };
-    await Chat.create(chatData)
-    res.json({success: true, message: "Chat created"});
+    const chat = await Chat.create(chatData);
+
+res.json({
+  success: true,
+  chat,
+});
   } catch (error) {
     res.json({success: false, message: error.message,});
   }
@@ -22,7 +26,10 @@ export const createChat = async (req, res) => {
 export const getChats = async (req, res) => {
   try {
     const userId = req.user._id;
-    const chats = await Chat.find({userId}).sort({updatedAt: -1})
+    const chats = await Chat.find({ userId }).sort({
+  isPinned: -1,
+  updatedAt: -1,
+});
 
     
     res.json({success: true, chats});
@@ -42,5 +49,109 @@ export const deleteChat = async (req, res) => {
     res.json({success: true, message: "Chat Deleted"});
   } catch (error) {
     res.json({success: false, message: error.message});
+  }
+};
+
+export const renameChat = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { chatId, name } = req.body;
+
+    const chat = await Chat.findOneAndUpdate(
+      { _id: chatId, userId },
+      { name },
+      { new: true }
+    );
+
+    if (!chat) {
+      return res.json({
+        success: false,
+        message: "Chat not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      chat,
+      message: "Chat renamed ",
+    });
+
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const clearChat = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { chatId } = req.body;
+
+    const chat = await Chat.findOne({
+      _id: chatId,
+      userId,
+    });
+
+    if (!chat) {
+      return res.json({
+        success: false,
+        message: "Chat not found",
+      });
+    }
+
+    chat.messages = [];
+
+    await chat.save();
+
+    res.json({
+      success: true,
+      message: "Chat cleared ",
+      chat,
+    });
+
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const pinChat = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { chatId } = req.body;
+
+    const chat = await Chat.findOne({
+      _id: chatId,
+      userId,
+    });
+
+    if (!chat) {
+      return res.json({
+        success: false,
+        message: "Chat not found",
+      });
+    }
+
+    chat.isPinned = !chat.isPinned;
+
+    await chat.save();
+
+    res.json({
+      success: true,
+      message: chat.isPinned
+        ? "Chat pinned "
+        : "Chat unpinned ",
+      chat,
+    });
+
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
   }
 };

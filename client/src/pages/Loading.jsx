@@ -1,27 +1,43 @@
-import React, { useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAppContext } from '../context/AppContext'
+import React, { useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAppContext } from "../context/AppContext";
 
 const Loading = () => {
-  const navigate = useNavigate()
-  const {fetchUser} = useAppContext()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { axios, fetchUser } = useAppContext();
 
-    useEffect(() => {
+  useEffect(() => {
     const loadData = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 8000));
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 8000));
 
-      await fetchUser();   // Wait until the updated user is fetched
-      navigate("/");
+        const params = new URLSearchParams(location.search);
+        const session_id = params.get("session_id");
+
+        if (session_id) {
+          await axios.get(`/api/credit/verify?session_id=${session_id}`);
+        }
+
+        await fetchUser();
+
+        if (session_id) {
+  navigate("/");
+}
+      } catch (error) {
+        console.log(error);
+        navigate("/");
+      }
     };
 
     loadData();
-  }, []);
+  }, [location.pathname]);
 
   return (
-    <div className="bg-gradient-to-b from-[#531B81] to-[#29184B] backdrop-opacity-60 flex items-center justify-center h-screen w-screen text-white text-2xl">
-      <div className="w-10 h-10 rounded-full border-3 border-white border-t-transparent animate-spin"></div>
-      </div>
-  )
-}
+    <div className="bg-white dark:bg-black flex items-center justify-center h-screen w-screen">
+      <div className="w-10 h-10 rounded-full border-4 border-black dark:border-white border-t-transparent animate-spin"></div>
+    </div>
+  );
+};
 
-export default Loading
+export default Loading;

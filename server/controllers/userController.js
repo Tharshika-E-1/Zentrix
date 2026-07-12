@@ -2,7 +2,6 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import Chat from "../models/Chat.js";
-
 // Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -86,6 +85,67 @@ export const getPublishedImages = async (req, res) => {
   
   } catch (error) {
     return res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+
+    const { name } = req.body;
+
+    await User.findByIdAndUpdate(req.userId, {
+      name,
+    });
+
+    res.json({
+      success: true,
+      message: "Profile updated",
+    });
+
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+
+    const {
+      currentPassword,
+      newPassword,
+    } = req.body;
+
+    const user = await User.findById(req.userId);
+
+    const isMatch = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+
+    if (!isMatch) {
+      return res.json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    user.password = newPassword;
+
+await user.save();
+
+    res.json({
+      success: true,
+      message: "Password changed successfully",
+    });
+
+  } catch (error) {
+    res.json({
       success: false,
       message: error.message,
     });

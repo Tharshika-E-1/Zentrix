@@ -1,5 +1,6 @@
 import Transaction from "../models/Transaction.js";
 import Stripe from 'stripe'
+import User from "../models/User.js";
 
 
 const plans = [
@@ -84,8 +85,7 @@ export const purchasePlan = async (req, res) => {
             },
   ],
   mode: "payment",
-  success_url: `${origin}/loading`,
-  cancel_url:`${origin}`,
+  success_url: `${origin}/loading?session_id={CHECKOUT_SESSION_ID}`,
   metadata: {transactionId: transaction._id.toString(), appId: 'quickgpt'},
   expires_at: Math.floor(Date.now() / 1000) + 30 * 60, //Expires in 30 minutes
 });
@@ -94,5 +94,47 @@ res.json({success: true, url: session.url})
     
   } catch (error) {
     res.json({success: false, message: error.message})
+  }
+};
+
+export const verifyPayment = async (req, res) => {
+  try {
+    console.log("verifyPayment called");
+
+    const { session_id } = req.query;
+    console.log("Session ID:", session_id);
+
+    const session = await stripe.checkout.sessions.retrieve(session_id);
+    console.log("Payment Status:", session.payment_status);
+
+    const transaction = await Transaction.findById(
+      session.metadata.transactionId
+    );
+    console.log("Transaction:", transaction);
+
+    const user = await User.findById(transaction.userId);
+    console.log("User Before:", user.credits);
+
+    if (!transaction.isPaid) {
+      transaction.isPaid = true;
+      await transaction.save();
+
+      user.credits += transaction.credits;
+
+      await user.save();
+
+      console.log("User After:", user.credits);
+    }
+
+    res.json({
+      success: true,
+      message: "Payment verified",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
   }
 };

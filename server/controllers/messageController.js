@@ -2,7 +2,7 @@ import Chat from "../models/Chat.js";
 import User from "../models/User.js";
 import axios from "axios"
 import imagekit from "../configs/imageKit.js";
-import openai from "../configs/openai.js";
+import ai from "../configs/gemini.js";
 
 // Text-based AI Chat Message Controller
 export const textMessageController = async (req, res) => {
@@ -16,31 +16,57 @@ export const textMessageController = async (req, res) => {
       });
     }
 
-    const { chatId, prompt } = req.body;
+    const {
+  chatId,
+  prompt,
+  isPDF,
+  pdfName,
+} = req.body;
 
     const chat = await Chat.findOne({ userId, _id: chatId });
 
-    chat.messages.push({role: "user", content: prompt, timestamp: Date.now(), isImage: false,});
-    const { choices } = await openai.chat.completions.create({
-    model: "gemini-2.5-flash",
-    messages: [
-        
-        {
-            role: "user",
-            content: prompt,
-    },
-  ],
+    chat.messages.push({
+  role: "user",
+  content: prompt,
+  timestamp: Date.now(),
+  isImage: false,
+  isPDF: isPDF || false,
+  pdfName: pdfName || "",
 });
-const reply = {...choices[0].message, timestamp: Date.now(), isImage: false}
+
+// Update chat title only once
+if (chat.name === "New Chat") {
+  chat.name =
+    prompt.length > 40
+      ? prompt.substring(0, 40) + "..."
+      : prompt;
+}
+    const response = await ai.models.generateContent({
+  model: "gemini-3.5-flash",
+  contents: prompt,
+});
+
+const reply = {
+  role: "assistant",
+  content: response.text,
+  timestamp: Date.now(),
+  isImage: false,
+};
 res.json({success: true, reply})
 chat.messages.push(reply)
 await chat.save()
 await User.updateOne({_id: userId}, {$inc: {credits: -1}})
 
   } catch (error) {
-    res.json({success: false, message: error.message})
-  }
-};
+  console.error(error);
+  console.error(error.response?.data);
+
+  res.json({
+    success: false,
+    message: error.message,
+  });
+}
+}
 
 // Image Generation Message Controller
 export const imageMessageController = async (req, res) => {
@@ -66,6 +92,12 @@ export const imageMessageController = async (req, res) => {
   content: prompt,
   timestamp: Date.now(),
   isImage: false,});
+  if (chat.name === "New Chat") {
+  chat.name =
+    prompt.length > 40
+      ? prompt.substring(0, 40) + "..."
+      : prompt;
+}
 
   //Encode the prompt
   const encodedPrompt = encodeURIComponent(prompt);
@@ -83,12 +115,13 @@ const uploadResponse = await imagekit.upload({
   folder: "quickgpt",
 });
 const reply = {
-    role: 'assistant',
-    content: uploadResponse.url,
-    timestamp: Date.now(), 
-    isImage: true,
-    isPublished
-}
+  role: "assistant",
+  content: uploadResponse.url,
+  prompt,              // <-- Add this line
+  timestamp: Date.now(),
+  isImage: true,
+  isPublished,
+};
 res.json({success: true, reply})
 chat.messages.push(reply)
 await chat.save()
