@@ -1,8 +1,8 @@
 import fs from "fs";
-import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
+import { createRequire } from "module";
 import { splitIntoChunks } from "../services/chunkService.js";
 import { saveDocument, getDocument } from "../services/documentStore.js";
-import { askGemini } from "../services/geminiService.js";
+import { askGroq } from "../services/groqService.js";
 import { createEmbedding } from "../services/embeddingService.js";
 import { storeEmbedding, searchEmbedding  } from "../services/vectorService.js";
 import Chat from "../models/Chat.js";
@@ -16,20 +16,14 @@ export const uploadPDF = async (req, res) => {
                 message: "No PDF uploaded"
             });
         }
+        const require = createRequire(import.meta.url);
+const pdf = require("pdf-parse");
 
-        const data = new Uint8Array(fs.readFileSync(req.file.path));
+        const buffer = fs.readFileSync(req.file.path);
 
-        const pdf = await pdfjsLib.getDocument({ data }).promise;
+const pdfData = await pdf(buffer);
 
-        let text = "";
-
-        for (let i = 1; i <= pdf.numPages; i++) {
-            const page = await pdf.getPage(i);
-            const content = await page.getTextContent();
-
-            text += content.items.map(item => item.str).join(" ");
-            text += "\n\n";
-        }
+const text = pdfData.text;
 
         const chunks = splitIntoChunks(text);
 
@@ -56,7 +50,7 @@ console.log(getDocument());
 
         res.json({
             success: true,
-            pages: pdf.numPages,
+            pages: pdfData.numpages,
             characters: text.length,
             totalChunks: chunks.length,
             firstChunk: chunks[0]
@@ -125,7 +119,7 @@ Question:
 ${question}
 `;
 
-        const answer = await askGemini(prompt);
+        const answer = await askGroq(prompt);
         chat.messages.push({
     role: "assistant",
     content: answer,

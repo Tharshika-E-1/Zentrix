@@ -2,7 +2,8 @@ import Chat from "../models/Chat.js";
 import User from "../models/User.js";
 import axios from "axios"
 import imagekit from "../configs/imageKit.js";
-import ai from "../configs/gemini.js";
+import { askGroq } from "../services/groqService.js";
+
 
 // Text-based AI Chat Message Controller
 export const textMessageController = async (req, res) => {
@@ -41,14 +42,11 @@ if (chat.name === "New Chat") {
       ? prompt.substring(0, 40) + "..."
       : prompt;
 }
-    const response = await ai.models.generateContent({
-  model: "gemini-3.5-flash",
-  contents: prompt,
-});
+    const aiResponse = await askGroq(prompt);
 
 const reply = {
   role: "assistant",
-  content: response.text,
+  content: aiResponse,
   timestamp: Date.now(),
   isImage: false,
 };

@@ -41,4 +41,12 @@ app.use("/api/community", communityRouter);
 app.use("/api/rag", ragRouter);
 app.use("/api/vision", visionRouter);
 
+const PORT = process.env.PORT || 5000;
+
+if (process.env.NODE_ENV !== "production") {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
 export default app;

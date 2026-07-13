@@ -109,20 +109,23 @@ const navigate = useNavigate();
 
       <div className="max-w-3xl mx-auto bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-md p-8">
 
-        <h1 className="text-3xl font-bold mb-8 text-center">
+        <h1 className="text-3xl font-bold mb-8 text-center text-black dark:text-white">
           Account Settings
         </h1>
 
         <div className="flex items-center gap-6 mb-10 ">
 
-          <UserCircle size={50} className="text-black" />
+          <UserCircle
+  size={50}
+  className="text-black dark:text-white"
+/>
 
           <div>
-            <h2 className="text-xl font-semibold">
+            <h2 className="text-xl font-semibold text-black dark:text-white">
               {user?.name}
             </h2>
 
-            <p className="text-gray-500">
+            <p className="text-gray-500 dark:text-white">
               {user?.email}
             </p>
           </div>
@@ -131,19 +134,23 @@ const navigate = useNavigate();
 
         <div className="space-y-6">
 
-          <div className="border rounded-xl p-5 flex items-center gap-4">
-            <UserCircle size={24} />
+          <div className="border border-gray-300 dark:border-gray-700 rounded-xl p-5 flex items-center gap-4">
+            <UserCircle
+  size={24}
+  className="text-black dark:text-white"
+/>
             <div>
               <div className="flex items-center justify-between">
 
-  <p className="font-semibold text-lg">Name</p>
-
+  <p className="font-semibold text-lg text-black dark:text-white">
+  Name
+</p>
   {!editing && (
     <button
       onClick={() => setEditing(true)}
-      className="text-black-500 hover:text-black"
+      className="text-gray-500 hover:text-black dark:hover:text-white"
     >
-      <Pencil size={18} />
+      <Pencil size={18}  className="text-black dark:text-white"/>
     </button>
   )}
 
@@ -154,10 +161,11 @@ const navigate = useNavigate();
   readOnly={!editing}
   onChange={(e) => setName(e.target.value)}
   className={`mt-2 w-full rounded-lg p-2 border
+  text-black dark:text-white
   ${
     editing
-      ? "border-black bg-white"
-      : "border-transparent bg-gray-100 cursor-default"
+      ? "border-black dark:border-gray-600 bg-white dark:bg-[#2A2A2A]"
+      : "border-transparent bg-gray-100 dark:bg-[#262626]"
   }`}
 />
 
@@ -177,25 +185,33 @@ const navigate = useNavigate();
             </div>
           </div>
 
-          <div className="border rounded-xl p-5 flex items-center gap-4">
-            <Mail size={24} />
+          <div className="border border-gray-300 dark:border-gray-700 rounded-xl p-5 flex items-center gap-4">
+            <Mail
+  size={24}
+  className="text-black dark:text-white"
+/>
             <div>
-              <p className="font-semibold">Email</p>
-              <p className="text-gray-500">{user?.email}</p>
+              <p className="font-semibold text-black dark:text-white">
+  Email
+</p>
+              <p className="text-gray-500 dark:text-white">{user?.email}</p>
             </div>
           </div>
 
           <button
   onClick={() => setShowPassword(!showPassword)}
-  className="w-full border rounded-xl p-5 flex items-center gap-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+  className="w-full border border-gray-300 dark:border-gray-700 rounded-xl p-5 flex items-center gap-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
 >
-            <Lock size={24} />
-            <span className="font-semibold">
-              Change Password
-            </span>
+            <Lock
+  size={24}
+  className="text-black dark:text-white"
+/>
+            <span className="font-semibold text-black dark:text-white">
+  Change Password
+</span>
           </button>
           {showPassword && (
-  <div className="border rounded-xl p-5 space-y-4">
+  <div className="border border-gray-300 dark:border-gray-700 rounded-xl p-5 space-y-4 bg-white dark:bg-[#1a1a1a]">
 
     <div className="relative">
 
@@ -204,13 +220,13 @@ const navigate = useNavigate();
     placeholder="Current Password"
     value={currentPassword}
     onChange={(e) => setCurrentPassword(e.target.value)}
-    className="w-full border rounded-lg p-3 pr-12"
+    className="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-3 pr-12 bg-white dark:bg-[#2A2A2A] text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
   />
 
   <button
     type="button"
     onClick={() => setShowCurrent(!showCurrent)}
-    className="absolute right-4 top-1/2 -translate-y-1/2"
+    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-300"
   >
     {showCurrent ? <EyeOff size={20} /> : <Eye size={20} />}
   </button>
@@ -224,13 +240,13 @@ const navigate = useNavigate();
     placeholder="New Password"
     value={newPassword}
     onChange={(e) => setNewPassword(e.target.value)}
-    className="w-full border rounded-lg p-3 pr-12"
+    className="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-3 pr-12 bg-white dark:bg-[#2A2A2A] text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
   />
 
   <button
     type="button"
     onClick={() => setShowNew(!showNew)}
-    className="absolute right-4 top-1/2 -translate-y-1/2"
+    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-300"
   >
     {showNew ? <EyeOff size={20} /> : <Eye size={20} />}
   </button>
@@ -244,13 +260,13 @@ const navigate = useNavigate();
     placeholder="Confirm Password"
     value={confirmPassword}
     onChange={(e) => setConfirmPassword(e.target.value)}
-    className="w-full border rounded-lg p-3 pr-12"
+    className="w-full border border-gray-300 dark:border-gray-700 rounded-lg p-3 pr-12 bg-white dark:bg-[#2A2A2A] text-black dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
   />
 
   <button
     type="button"
     onClick={() => setShowConfirm(!showConfirm)}
-    className="absolute right-4 top-1/2 -translate-y-1/2"
+    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-300"
   >
     {showConfirm ? <EyeOff size={20} /> : <Eye size={20} />}
   </button>

@@ -1,6 +1,6 @@
 import Chat from "../models/Chat.js";
 import User from "../models/User.js";
-import { askGeminiVision } from "../services/geminiService.js";
+import { askGroqVision } from "../services/groqService.js";
 import imagekit from "../configs/imageKit.js";
 
 export const visionController = async (req, res) => {
@@ -48,10 +48,10 @@ const uploadResponse = await imagekit.upload({
           : prompt;
     }
 
-    const replyText = await askGeminiVision(
-      req.file.buffer,
-      prompt
-    );
+    const replyText = await askGroqVision(
+  req.file.buffer,
+  prompt
+);
 
     const reply = {
       role: "assistant",

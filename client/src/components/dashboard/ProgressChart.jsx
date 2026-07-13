@@ -34,7 +34,7 @@ const textColor = isDark ? "#ffffff" : "#000000";
 const gridColor = isDark ? "#666666" : "#d1d5db";
 
   return (
-    <div className="bg-white dark:bg-[#1a1a1a] rounded-2xl shadow-md p-6 mt-6">
+    <div className="bg-white dark:bg-[#181818] rounded-xl shadow-md p-6 mt-6 dark:border dark:border-gray-600">
       <h2 className="text-2xl font-bold mb-6 dark:text-white">
         📈 User Progress
       </h2>

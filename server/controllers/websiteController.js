@@ -1,10 +1,14 @@
 import fetchWebsiteContent from "../services/websiteService.js";
-import openai from "../configs/openai.js";
+import OpenAI from "openai";
 import Chat from "../models/Chat.js";
 import User from "../models/User.js";
 
 export const websiteChatController = async (req, res) => {
   try {
+    const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: "https://api.groq.com/openai/v1",
+});
     const { url, question } = req.body;
     let userId;
 
@@ -89,8 +93,8 @@ if (chat.name === "New Chat") {
     // Send to Gemini
     console.log("Sending to Gemini...");
 
-   const { choices } = await openai.chat.completions.create({
-  model: "gemini-3.5-flash",
+   const { choices } = await groq.chat.completions.create({
+  model: "llama-3.3-70b-versatile",
   messages: [
     {
       role: "system",
@@ -111,7 +115,8 @@ Question:
 ${question}
 `
     }
-  ]
+  ],
+  temperature: 0.3,
 });
 
 console.log(choices[0].message.content);

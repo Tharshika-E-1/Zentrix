@@ -42,16 +42,19 @@ const getColor = (count) => {
   return "bg-green-700";
 };
   return (
-  <div className="bg-white dark:bg-[#181818] rounded-xl shadow-md p-6 mt-6">
+  <div className="bg-white dark:bg-[#181818] rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm p-6 mt-6">
 
     <div className="flex items-center gap-2 mb-4">
-      <CalendarDays className="w-7 h-7" />
-      <h2 className="text-xl font-semibold">
-        Weekly Activity
-      </h2>
+      <CalendarDays
+  size={26}
+  className="text-black dark:text-white"
+/>
+      <h2 className="text-2xl font-bold text-black dark:text-white">
+  Weekly Activity
+</h2>
       
     </div>
-    <p className="text-sm text-gray-500 mt-1 font-semibold">
+    <p className="text-gray-600 dark:text-white">
   Your activity over the last 7 days
 </p>
     <div className="mt-6 overflow-x-auto">
@@ -64,7 +67,7 @@ const getColor = (count) => {
     {days.map((day) => (
       <div
         key={day}
-        className="text-center text-sm font-semibold text-gray-500"
+        className="text-center text-sm font-semibold text-gray-500 dark:text-white"
       >
         {day}
       </div>
@@ -81,7 +84,7 @@ const getColor = (count) => {
   className="grid grid-cols-[100px_repeat(7,1fr)] gap-4 items-center mb-4 w-full"
 >
 
-      <div className="text-sm font-semibold text-gray-500">
+      <div className="text-sm font-semibold text-gray-500 dark:text-white">
         {week}
       </div>
 
@@ -90,7 +93,7 @@ const getColor = (count) => {
         <div className="flex justify-center" key={dayIndex}>
   <div
     title={`${days[dayIndex]}: ${count} prompts`}
-    className={`w-7 h-7 rounded-md border border-gray-200 transition-all duration-200 hover:scale-110 cursor-pointer ${getColor(count)}`}
+    className={`w-7 h-7 rounded-md border border-gray-200 dark:border-gray-700 transition-all duration-200 hover:scale-110 cursor-pointer ${getColor(count)}`}
   />
 </div>
 
@@ -104,7 +107,7 @@ const getColor = (count) => {
 
   
 
-<div className="flex items-center justify-end gap-2 mt-6 text-xs text-gray-500">
+<div className="flex items-center justify-end gap-2 mt-6 text-xs text-gray-500 dark:text-white">
 
   <span>Less</span>
 
