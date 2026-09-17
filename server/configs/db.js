@@ -9,10 +9,10 @@ const connectDB = async () => {
     });
 
     console.log("✅ Database Connected");
-
   } catch (error) {
     console.error("❌ FULL ERROR:");
     console.error(error);
+    throw error;
   }
 };
 
